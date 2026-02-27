@@ -1,5 +1,5 @@
 // Game phases
-export type GamePhase = 'title' | 'playing' | 'spelling' | 'dressup' | 'photobooth';
+export type GamePhase = 'title' | 'playing' | 'spelling' | 'dressup' | 'photobooth' | 'math' | 'gameover';
 
 // Platform types
 export type PlatformType = 'normal' | 'moving' | 'crumbly';
@@ -84,4 +84,21 @@ export interface Particle {
 export interface SpellingWord {
   word: string;
   difficulty: 'easy' | 'medium';
+}
+
+// Math problem
+export interface MathProblem {
+  question: string;
+  answer: number;
+  choices: number[];
+}
+
+// High score entry
+export interface HighScoreEntry {
+  name: string;
+  score: number;
+  grade: string;
+  time: number;
+  style: number;
+  date: string;
 }

@@ -7,6 +7,8 @@ import HUD from './HUD';
 import SpellingChallenge from './SpellingChallenge';
 import DressUp from './DressUp';
 import PhotoBooth from './PhotoBooth';
+import MathChallenge from './MathChallenge';
+import GameOver from './GameOver';
 
 export default function GameShell() {
   const phase = useGameStore((s) => s.phase);
@@ -24,6 +26,8 @@ export default function GameShell() {
         {phase === 'spelling' && <SpellingChallenge />}
         {phase === 'dressup' && <DressUp />}
         {phase === 'photobooth' && <PhotoBooth />}
+        {phase === 'math' && <MathChallenge />}
+        {phase === 'gameover' && <GameOver />}
       </div>
     </div>
   );

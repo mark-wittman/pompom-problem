@@ -6,10 +6,12 @@ import { PomPomRenderer } from '@/rendering/PomPomRenderer';
 import { PALETTE } from '@/utils/color';
 
 export default function PhotoBooth() {
-  const { elapsedTime, styleScore, pomColor, accessories, resetGame, setPhase } = useGameStore();
+  const { elapsedTime, styleScore, pomColor, accessories, playerName, resetGame, setPhase, addHighScore } =
+    useGameStore();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<PomPomRenderer | null>(null);
   const animRef = useRef<number>(0);
+  const savedRef = useRef(false);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -36,6 +38,20 @@ export default function PhotoBooth() {
     grade === 'A' ? '#7EBD73' :
     grade === 'B' ? '#5B8DBE' :
     grade === 'C' ? '#E8A34E' : '#E8829B';
+
+  // Save high score on mount
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    addHighScore({
+      name: playerName || 'Anonymous',
+      score: totalScore,
+      grade,
+      time: elapsedTime,
+      style: styleScore,
+      date: new Date().toISOString(),
+    });
+  }, [addHighScore, playerName, totalScore, grade, elapsedTime, styleScore]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -110,9 +126,14 @@ export default function PhotoBooth() {
         className="text-center w-full max-w-sm px-4"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
-        <h2 className="text-2xl mb-3" style={{ color: '#4A4A4A' }}>
+        <h2 className="text-2xl mb-1" style={{ color: '#4A4A4A' }}>
           Photo Booth!
         </h2>
+        {playerName && (
+          <p className="text-base mb-3" style={{ color: '#9B9B9B' }}>
+            Great job, {playerName}!
+          </p>
+        )}
 
         {/* Portrait canvas */}
         <div className="inline-block rounded-2xl overflow-hidden border-4 border-[#E8E0D0] shadow-lg mb-4">

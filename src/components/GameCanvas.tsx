@@ -18,6 +18,7 @@ export default function GameCanvas({ running }: GameCanvasProps) {
   const input = useInput();
   const gameRef = useRef<Game | null>(null);
   const initRef = useRef(false);
+  const prevRunningRef = useRef(false);
 
   const {
     setElapsedTime,
@@ -25,7 +26,6 @@ export default function GameCanvas({ running }: GameCanvasProps) {
     addAccessory,
     incrementStyleScore,
     setPhase,
-    resetGame,
   } = useGameStore();
 
   // Initialize game
@@ -54,19 +54,32 @@ export default function GameCanvas({ running }: GameCanvasProps) {
     };
 
     game.onFellOff = () => {
-      // Brief delay then restart
-      setTimeout(() => {
-        resetGame();
-        setPhase('playing');
-      }, 800);
+      setPhase('math');
     };
-  }, [canvasRef, setPomColor, addAccessory, incrementStyleScore, setPhase, resetGame]);
+  }, [canvasRef, setPomColor, addAccessory, incrementStyleScore, setPhase]);
 
-  // Reset game when starting new round
+  // Handle running state transitions and respawn modes
   useEffect(() => {
-    if (running && gameRef.current) {
-      gameRef.current.reset();
+    const game = gameRef.current;
+    if (!game) return;
+
+    if (running && !prevRunningRef.current) {
+      // Transitioning to running state
+      const respawnMode = useGameStore.getState().respawnMode;
+
+      if (respawnMode === 'platform') {
+        game.respawnOnPlatform();
+        useGameStore.getState().setRespawnMode(null);
+      } else if (respawnMode === 'bottom') {
+        game.restartFromBottom();
+        useGameStore.getState().setRespawnMode(null);
+      } else {
+        // Normal reset (new game start)
+        game.reset();
+      }
     }
+
+    prevRunningRef.current = running;
   }, [running]);
 
   // Game loop

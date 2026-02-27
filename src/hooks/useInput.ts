@@ -104,6 +104,26 @@ export function useInput(): InputState {
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
     e.preventDefault();
+
+    // Detect swipe-up: if finger moved up by 30+ px, trigger a jump
+    if (touchState.current.active && e.changedTouches.length > 0) {
+      const touch = e.changedTouches[0];
+      const dy = touchState.current.startY - touch.clientY;
+      if (dy > 30) {
+        state.current.up = true;
+        state.current.jumpPressed = true;
+        // Release jump on next frame via a short timeout
+        setTimeout(() => {
+          state.current.up = false;
+          state.current.jumpReleased = true;
+        }, 50);
+        touchState.current.active = false;
+        state.current.left = false;
+        state.current.right = false;
+        return;
+      }
+    }
+
     touchState.current.active = false;
     state.current.left = false;
     state.current.right = false;

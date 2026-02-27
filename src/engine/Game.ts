@@ -35,6 +35,7 @@ export class Game {
   lastSafeY: number = SPAWN_Y;
   respawnTimer: number = 0;
   isRespawning: boolean = false;
+  fallTimer: number = 0;
 
   // Callbacks
   onCollectPaint?: (color: string) => void;
@@ -73,6 +74,7 @@ export class Game {
     this.lastSafeY = SPAWN_Y;
     this.respawnTimer = 0;
     this.isRespawning = false;
+    this.fallTimer = 0;
   }
 
   update(input: InputState, dt: number): void {
@@ -171,8 +173,14 @@ export class Game {
     // Camera
     this.camera.update(this.pom.y, dt);
 
-    // Fall off screen detection — restart from beginning
-    if (this.pom.y > this.camera.y + CANVAS_HEIGHT + 100 && !this.isRespawning) {
+    // Fall off screen detection — time-based (player below camera for 0.3s)
+    if (this.pom.y > this.camera.y + CANVAS_HEIGHT) {
+      this.fallTimer += dt;
+    } else {
+      this.fallTimer = 0;
+    }
+
+    if (this.fallTimer > 0.3 && !this.isRespawning) {
       this.isRespawning = true;
       this.isRunning = false;
       this.onFellOff?.();
@@ -184,6 +192,48 @@ export class Game {
       this.isRunning = false;
       this.onReachSummit?.();
     }
+  }
+
+  respawnOnPlatform(): void {
+    // Find the visible platform closest to the center of the camera view
+    const cameraCenterY = this.camera.y + CANVAS_HEIGHT / 2;
+    let bestPlatform: Platform | null = null;
+    let bestDist = Infinity;
+
+    for (const platform of this.platforms) {
+      if (platform.isGone) continue;
+      if (!this.camera.isVisible(platform.y, 20)) continue;
+
+      const dist = Math.abs(platform.y - cameraCenterY);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestPlatform = platform;
+      }
+    }
+
+    if (bestPlatform) {
+      this.pom.reset(bestPlatform.x + bestPlatform.width / 2 - PLAYER_WIDTH / 2, bestPlatform.y - PLAYER_HEIGHT);
+    } else {
+      // Fallback: spawn at bottom
+      this.pom.reset(SPAWN_X, SPAWN_Y);
+      this.camera.reset();
+    }
+
+    this.camera.highestY = this.camera.y;
+    this.particles.clear();
+    this.fallTimer = 0;
+    this.isRespawning = false;
+    this.isRunning = true;
+  }
+
+  restartFromBottom(): void {
+    this.pom.reset(SPAWN_X, SPAWN_Y);
+    this.camera.reset();
+    this.particles.clear();
+    this.fallTimer = 0;
+    this.isRespawning = false;
+    this.isRunning = true;
+    // Keep collectibles/accessories intact — don't reset them
   }
 
   render(ctx: CanvasRenderingContext2D, time: number): void {

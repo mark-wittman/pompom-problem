@@ -6,7 +6,7 @@ import { getRandomWord } from '@/level/SpellingWords';
 import { audioManager } from '@/audio/AudioManager';
 
 export default function SpellingChallenge() {
-  const { setPhase, setSpellingWord, spellingAttempts, incrementSpellingAttempts, resetGame } =
+  const { setPhase, setSpellingWord, spellingAttempts, incrementSpellingAttempts, loseLife, lives, setRespawnMode } =
     useGameStore();
 
   const [word, setWord] = useState('');
@@ -50,9 +50,16 @@ export default function SpellingChallenge() {
       setUserInput('');
 
       if (newAttempts >= 3) {
-        // Failed - restart game
+        // Failed spelling — lose a life
+        loseLife();
+        const remainingLives = lives - 1;
         setTimeout(() => {
-          resetGame();
+          if (remainingLives > 0) {
+            setRespawnMode('bottom');
+            setPhase('playing');
+          } else {
+            setPhase('gameover');
+          }
         }, 1500);
       } else {
         setTimeout(() => {
@@ -61,7 +68,7 @@ export default function SpellingChallenge() {
         }, 800);
       }
     }
-  }, [userInput, word, attempts, setPhase, incrementSpellingAttempts, resetGame]);
+  }, [userInput, word, attempts, setPhase, incrementSpellingAttempts, loseLife, lives, setRespawnMode]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -148,7 +155,7 @@ export default function SpellingChallenge() {
             className="text-3xl animate-bounce"
             style={{ color: '#7EBD73' }}
           >
-            Correct! ✨
+            Correct!
           </div>
         )}
         {feedback === 'wrong' && (
