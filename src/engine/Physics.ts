@@ -1,6 +1,6 @@
 // Physics constants
-export const GRAVITY = 1800; // px/s²
-export const JUMP_VELOCITY = -680; // px/s (negative = up)
+export const GRAVITY = 1400; // px/s²
+export const JUMP_VELOCITY = -820; // px/s (negative = up) — max height ~240px
 export const JUMP_CUT_MULTIPLIER = 0.4; // When releasing jump early
 export const MAX_FALL_SPEED = 900; // Terminal velocity
 export const MOVE_SPEED = 320; // px/s horizontal

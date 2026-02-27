@@ -2,136 +2,121 @@ import { PlatformData, CollectibleData } from '@/types';
 import { LEVEL_WIDTH } from '@/engine/Physics';
 
 // Level 1: ~8000px tall, ~90 platforms, 16 collectibles
-// Bottom 20% (6400-8000): Tutorial zone - wide platforms, easy gaps
-// Middle 50% (2400-6400): Main challenge - narrower, wider gaps, moving + crumbly
-// Top 30% (0-2400): Climax - small platforms, large gaps, risk/reward detours
-// Summit: y=200, large platform triggers spelling challenge
+// Max jump height with gravity=1400, jumpV=-820 is ~240px
+// Tutorial gaps: 80-130px | Main gaps: 120-160px | Climax gaps: 140-200px
 
 const W = LEVEL_WIDTH; // 600
 const center = W / 2;
 
 export const PLATFORMS: PlatformData[] = [
-  // ===== GROUND / SPAWN AREA (y: 7800-7900) =====
+  // ===== GROUND / SPAWN AREA =====
   { x: 0, y: 7900, width: W, type: 'normal' }, // Full-width ground
 
-  // ===== TUTORIAL ZONE (y: 6400-7800) - Wide platforms, gentle progression =====
-  { x: 50, y: 7700, width: 200, type: 'normal' },
-  { x: 350, y: 7650, width: 200, type: 'normal' },
-  { x: 150, y: 7500, width: 250, type: 'normal' },
-  { x: 400, y: 7400, width: 160, type: 'normal' },
-  { x: 50, y: 7300, width: 200, type: 'normal' },
-  { x: 300, y: 7200, width: 200, type: 'normal' },
-  { x: 100, y: 7050, width: 180, type: 'normal' },
-  { x: 350, y: 6950, width: 180, type: 'normal' },
-  { x: 50, y: 6800, width: 220, type: 'normal' },
-  { x: 320, y: 6700, width: 200, type: 'normal' },
-  { x: 150, y: 6550, width: 200, type: 'normal' },
-  { x: 380, y: 6450, width: 180, type: 'normal' },
+  // ===== TUTORIAL ZONE (y: 6800-7800) - Wide platforms, small gaps =====
+  { x: 100, y: 7790, width: 220, type: 'normal' },   // +110 — easy first hop
+  { x: 350, y: 7690, width: 200, type: 'normal' },   // +100
+  { x: 80, y: 7580, width: 250, type: 'normal' },    // +110
+  { x: 300, y: 7470, width: 200, type: 'normal' },   // +110
+  { x: 50, y: 7370, width: 200, type: 'normal' },    // +100
+  { x: 320, y: 7260, width: 200, type: 'normal' },   // +110
+  { x: 100, y: 7140, width: 200, type: 'normal' },   // +120
+  { x: 380, y: 7020, width: 180, type: 'normal' },   // +120
+  { x: 50, y: 6910, width: 220, type: 'normal' },    // +110
+  { x: 300, y: 6800, width: 200, type: 'normal' },   // +110
 
-  // ===== MAIN CHALLENGE - Lower (y: 5200-6400) =====
-  { x: 80, y: 6300, width: 160, type: 'normal' },
-  { x: 320, y: 6180, width: 140, type: 'normal' },
-  { x: 100, y: 6050, width: 150, type: 'moving', moveRange: 80, moveSpeed: 1.2, moveAxis: 'x' },
-  { x: 380, y: 5920, width: 130, type: 'normal' },
-  { x: 150, y: 5800, width: 140, type: 'normal' },
-  { x: 350, y: 5680, width: 120, type: 'crumbly' },
-  { x: 50, y: 5560, width: 160, type: 'normal' },
-  { x: 300, y: 5440, width: 140, type: 'normal' },
-  { x: 100, y: 5320, width: 150, type: 'moving', moveRange: 100, moveSpeed: 1.5, moveAxis: 'x' },
-  { x: 400, y: 5200, width: 130, type: 'normal' },
+  // ===== MAIN CHALLENGE - Lower (y: 5800-6800) =====
+  { x: 80, y: 6680, width: 170, type: 'normal' },    // +120
+  { x: 350, y: 6560, width: 150, type: 'normal' },   // +120
+  { x: 100, y: 6430, width: 160, type: 'moving', moveRange: 80, moveSpeed: 1.2, moveAxis: 'x' }, // +130
+  { x: 380, y: 6300, width: 140, type: 'normal' },   // +130
+  { x: 120, y: 6170, width: 150, type: 'normal' },   // +130
+  { x: 350, y: 6040, width: 130, type: 'crumbly' },  // +130
+  { x: 50, y: 5920, width: 170, type: 'normal' },    // +120
+  { x: 300, y: 5800, width: 150, type: 'normal' },   // +120
 
-  // ===== MAIN CHALLENGE - Middle (y: 4000-5200) =====
-  { x: 200, y: 5100, width: 130, type: 'normal' },
-  { x: 50, y: 4980, width: 120, type: 'normal' },
-  { x: 350, y: 4860, width: 140, type: 'crumbly' },
-  { x: 150, y: 4740, width: 130, type: 'normal' },
-  { x: 400, y: 4620, width: 120, type: 'moving', moveRange: 70, moveSpeed: 1.3, moveAxis: 'x' },
-  { x: 80, y: 4500, width: 140, type: 'normal' },
-  { x: 300, y: 4380, width: 130, type: 'normal' },
-  { x: 50, y: 4260, width: 120, type: 'crumbly' },
-  { x: 250, y: 4140, width: 150, type: 'normal' },
-  { x: 420, y: 4020, width: 120, type: 'normal' },
+  // ===== MAIN CHALLENGE - Middle (y: 4700-5800) =====
+  { x: 100, y: 5670, width: 140, type: 'moving', moveRange: 90, moveSpeed: 1.3, moveAxis: 'x' }, // +130
+  { x: 380, y: 5540, width: 130, type: 'normal' },   // +130
+  { x: 150, y: 5400, width: 140, type: 'normal' },   // +140
+  { x: 50, y: 5260, width: 130, type: 'normal' },    // +140
+  { x: 350, y: 5120, width: 140, type: 'crumbly' },  // +140
+  { x: 120, y: 4990, width: 140, type: 'normal' },   // +130
+  { x: 400, y: 4860, width: 130, type: 'moving', moveRange: 70, moveSpeed: 1.4, moveAxis: 'x' }, // +130
+  { x: 80, y: 4730, width: 150, type: 'normal' },    // +130
 
-  // ===== MAIN CHALLENGE - Upper (y: 2800-4000) =====
-  { x: 100, y: 3900, width: 140, type: 'normal' },
-  { x: 350, y: 3780, width: 120, type: 'moving', moveRange: 90, moveSpeed: 1.4, moveAxis: 'x' },
-  { x: 50, y: 3660, width: 130, type: 'normal' },
-  { x: 300, y: 3540, width: 110, type: 'crumbly' },
-  { x: 150, y: 3420, width: 130, type: 'normal' },
-  { x: 400, y: 3300, width: 120, type: 'normal' },
-  { x: 50, y: 3180, width: 140, type: 'moving', moveRange: 100, moveSpeed: 1.6, moveAxis: 'x' },
-  { x: 280, y: 3060, width: 120, type: 'normal' },
-  { x: 100, y: 2940, width: 110, type: 'normal' },
-  { x: 380, y: 2820, width: 130, type: 'crumbly' },
+  // ===== MAIN CHALLENGE - Upper (y: 3500-4700) =====
+  { x: 320, y: 4590, width: 130, type: 'normal' },   // +140
+  { x: 50, y: 4450, width: 140, type: 'crumbly' },   // +140
+  { x: 280, y: 4310, width: 140, type: 'normal' },   // +140
+  { x: 420, y: 4170, width: 120, type: 'normal' },   // +140
+  { x: 100, y: 4030, width: 140, type: 'normal' },   // +140
+  { x: 350, y: 3890, width: 130, type: 'moving', moveRange: 90, moveSpeed: 1.5, moveAxis: 'x' }, // +140
+  { x: 50, y: 3750, width: 140, type: 'normal' },    // +140
+  { x: 300, y: 3610, width: 120, type: 'crumbly' },  // +140
+  { x: 130, y: 3470, width: 130, type: 'normal' },   // +140
 
-  // ===== CLIMAX ZONE - Lower (y: 1800-2800) =====
-  { x: 200, y: 2700, width: 110, type: 'normal' },
-  { x: 420, y: 2580, width: 100, type: 'normal' },
-  { x: 80, y: 2460, width: 110, type: 'moving', moveRange: 80, moveSpeed: 1.8, moveAxis: 'x' },
-  { x: 320, y: 2340, width: 100, type: 'crumbly' },
-  { x: 150, y: 2220, width: 100, type: 'normal' },
-  { x: 400, y: 2100, width: 90, type: 'normal' },
-  { x: 50, y: 1980, width: 110, type: 'normal' },
-  { x: 300, y: 1860, width: 100, type: 'moving', moveRange: 60, moveSpeed: 2.0, moveAxis: 'x' },
+  // ===== CLIMAX ZONE - Lower (y: 2400-3500) =====
+  { x: 380, y: 3320, width: 120, type: 'normal' },   // +150
+  { x: 100, y: 3170, width: 120, type: 'moving', moveRange: 80, moveSpeed: 1.6, moveAxis: 'x' }, // +150
+  { x: 350, y: 3020, width: 110, type: 'normal' },   // +150
+  { x: 50, y: 2870, width: 120, type: 'normal' },    // +150
+  { x: 300, y: 2720, width: 100, type: 'crumbly' },  // +150
+  { x: 120, y: 2570, width: 120, type: 'normal' },   // +150
+  { x: 400, y: 2420, width: 110, type: 'normal' },   // +150
 
-  // ===== CLIMAX ZONE - Middle (y: 1000-1800) =====
-  { x: 150, y: 1750, width: 100, type: 'normal' },
-  { x: 400, y: 1640, width: 90, type: 'crumbly' },
-  { x: 80, y: 1530, width: 100, type: 'normal' },
-  { x: 320, y: 1420, width: 90, type: 'normal' },
-  { x: 50, y: 1310, width: 110, type: 'moving', moveRange: 70, moveSpeed: 1.8, moveAxis: 'x' },
-  { x: 280, y: 1200, width: 90, type: 'normal' },
-  { x: 450, y: 1100, width: 80, type: 'crumbly' },
-  { x: 120, y: 1000, width: 100, type: 'normal' },
+  // ===== CLIMAX ZONE - Middle (y: 1400-2400) =====
+  { x: 150, y: 2270, width: 110, type: 'moving', moveRange: 70, moveSpeed: 1.8, moveAxis: 'x' }, // +150
+  { x: 380, y: 2110, width: 100, type: 'normal' },   // +160
+  { x: 50, y: 1960, width: 110, type: 'normal' },    // +150
+  { x: 300, y: 1810, width: 100, type: 'crumbly' },  // +150
+  { x: 100, y: 1660, width: 110, type: 'normal' },   // +150
+  { x: 380, y: 1510, width: 100, type: 'normal' },   // +150
 
-  // ===== CLIMAX ZONE - Upper (y: 400-1000) =====
-  { x: 350, y: 900, width: 90, type: 'normal' },
-  { x: 100, y: 800, width: 100, type: 'moving', moveRange: 80, moveSpeed: 2.0, moveAxis: 'x' },
-  { x: 380, y: 700, width: 80, type: 'normal' },
-  { x: 150, y: 600, width: 90, type: 'crumbly' },
-  { x: 400, y: 500, width: 100, type: 'normal' },
-  { x: 50, y: 400, width: 110, type: 'normal' },
+  // ===== CLIMAX ZONE - Upper (y: 400-1400) =====
+  { x: 80, y: 1360, width: 110, type: 'moving', moveRange: 70, moveSpeed: 1.8, moveAxis: 'x' }, // +150
+  { x: 320, y: 1200, width: 100, type: 'normal' },   // +160
+  { x: 50, y: 1050, width: 100, type: 'crumbly' },   // +150
+  { x: 300, y: 900, width: 100, type: 'normal' },    // +150
+  { x: 100, y: 750, width: 110, type: 'moving', moveRange: 80, moveSpeed: 2.0, moveAxis: 'x' }, // +150
+  { x: 380, y: 600, width: 100, type: 'normal' },    // +150
+  { x: 80, y: 450, width: 110, type: 'normal' },     // +150
 
   // ===== DETOUR PATHS (harder-to-reach side platforms for accessories) =====
-  // Tutorial detour (far right)
-  { x: 480, y: 7100, width: 100, type: 'normal' },  // leads to flower
-  // Mid-level detour (far left)
-  { x: 0, y: 5650, width: 80, type: 'normal' },    // leads to star
-  // Upper detour (high risk platform chain)
-  { x: 480, y: 4500, width: 80, type: 'crumbly' },   // leads to mustache
-  // Climax detour (very hard reach)
-  { x: 500, y: 2000, width: 70, type: 'normal' },    // leads to cape
-  { x: 0, y: 1150, width: 70, type: 'crumbly' },     // leads to wings (hardest)
+  { x: 480, y: 7060, width: 100, type: 'normal' },   // Tutorial detour — flower
+  { x: 0, y: 5740, width: 80, type: 'normal' },      // Mid detour — star
+  { x: 480, y: 4480, width: 80, type: 'crumbly' },   // Upper detour — mustache
+  { x: 500, y: 2000, width: 70, type: 'normal' },    // Climax detour — cape
+  { x: 0, y: 1080, width: 70, type: 'crumbly' },     // Hardest detour — wings
 
-  // ===== SUMMIT PLATFORM (y: 200) =====
-  { x: center - 150, y: 200, width: 300, type: 'normal' }, // Large summit platform
+  // ===== SUMMIT PLATFORM =====
+  { x: center - 150, y: 280, width: 300, type: 'normal' },
 ];
 
 export const COLLECTIBLES: CollectibleData[] = [
   // ===== PAINT BUCKETS (6 total) - on main path =====
-  { x: 250, y: 7475, type: 'paint', paintColor: 'blue' },      // Tutorial zone
-  { x: 420, y: 6650, type: 'paint', paintColor: 'pink' },       // Late tutorial
-  { x: 200, y: 5075, type: 'paint', paintColor: 'green' },      // Mid challenge
-  { x: 350, y: 3750, type: 'paint', paintColor: 'orange' },     // Upper challenge
-  { x: 200, y: 2675, type: 'paint', paintColor: 'purple' },     // Climax lower
-  { x: 150, y: 1725, type: 'paint', paintColor: 'yellow' },     // Climax middle
+  { x: 200, y: 7540, type: 'paint', paintColor: 'blue' },      // Tutorial
+  { x: 170, y: 6860, type: 'paint', paintColor: 'pink' },      // Late tutorial
+  { x: 230, y: 5360, type: 'paint', paintColor: 'green' },     // Mid challenge
+  { x: 200, y: 3860, type: 'paint', paintColor: 'orange' },    // Upper challenge
+  { x: 250, y: 2690, type: 'paint', paintColor: 'purple' },    // Climax lower
+  { x: 170, y: 1630, type: 'paint', paintColor: 'yellow' },    // Climax middle
 
   // ===== ACCESSORIES (10 total) =====
   // Easy to reach (on main path)
-  { x: 170, y: 7275, type: 'accessory', accessoryName: 'bow' },          // Tutorial
-  { x: 380, y: 6900, type: 'accessory', accessoryName: 'partyhat' },     // Tutorial
-  { x: 350, y: 5400, type: 'accessory', accessoryName: 'sunglasses' },   // Main challenge
+  { x: 170, y: 7330, type: 'accessory', accessoryName: 'bow' },
+  { x: 420, y: 6980, type: 'accessory', accessoryName: 'partyhat' },
+  { x: 350, y: 5500, type: 'accessory', accessoryName: 'sunglasses' },
 
   // Medium difficulty (slight detour)
-  { x: 130, y: 4700, type: 'accessory', accessoryName: 'crown' },        // Main challenge mid
-  { x: 400, y: 3250, type: 'accessory', accessoryName: 'tophat' },       // Upper challenge
+  { x: 130, y: 4690, type: 'accessory', accessoryName: 'crown' },
+  { x: 420, y: 3280, type: 'accessory', accessoryName: 'tophat' },
 
   // Hard to reach (on detour platforms)
-  { x: 510, y: 7060, type: 'accessory', accessoryName: 'flower' },       // Tutorial detour
-  { x: 30, y: 5610, type: 'accessory', accessoryName: 'star' },          // Mid detour
-  { x: 510, y: 4460, type: 'accessory', accessoryName: 'mustache' },     // Upper detour (crumbly!)
-  { x: 530, y: 1960, type: 'accessory', accessoryName: 'cape' },         // Climax detour
-  { x: 30, y: 1110, type: 'accessory', accessoryName: 'wings' },         // Hardest - crumbly platform!
+  { x: 510, y: 7020, type: 'accessory', accessoryName: 'flower' },
+  { x: 30, y: 5700, type: 'accessory', accessoryName: 'star' },
+  { x: 510, y: 4440, type: 'accessory', accessoryName: 'mustache' },
+  { x: 530, y: 1960, type: 'accessory', accessoryName: 'cape' },
+  { x: 30, y: 1040, type: 'accessory', accessoryName: 'wings' },
 ];
 
 // Player spawn point
@@ -139,4 +124,4 @@ export const SPAWN_X = center - 20;
 export const SPAWN_Y = 7850;
 
 // Summit trigger zone
-export const SUMMIT_Y = 250;
+export const SUMMIT_Y = 330;
