@@ -1,5 +1,5 @@
 // Game phases
-export type GamePhase = 'title' | 'playing' | 'spelling' | 'photobooth';
+export type GamePhase = 'title' | 'playing' | 'spelling' | 'dressup' | 'photobooth';
 
 // Platform types
 export type PlatformType = 'normal' | 'moving' | 'crumbly';

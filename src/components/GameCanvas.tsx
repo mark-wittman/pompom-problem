@@ -25,6 +25,7 @@ export default function GameCanvas({ running }: GameCanvasProps) {
     addAccessory,
     incrementStyleScore,
     setPhase,
+    resetGame,
   } = useGameStore();
 
   // Initialize game
@@ -51,7 +52,15 @@ export default function GameCanvas({ running }: GameCanvasProps) {
     game.onReachSummit = () => {
       setPhase('spelling');
     };
-  }, [canvasRef, setPomColor, addAccessory, incrementStyleScore, setPhase]);
+
+    game.onFellOff = () => {
+      // Brief delay then restart
+      setTimeout(() => {
+        resetGame();
+        setPhase('playing');
+      }, 800);
+    };
+  }, [canvasRef, setPomColor, addAccessory, incrementStyleScore, setPhase, resetGame]);
 
   // Reset game when starting new round
   useEffect(() => {

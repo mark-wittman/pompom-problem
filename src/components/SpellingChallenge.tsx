@@ -39,7 +39,7 @@ export default function SpellingChallenge() {
       setFeedback('correct');
       audioManager.playSfx('correct');
       setTimeout(() => {
-        setPhase('photobooth');
+        setPhase('dressup');
       }, 1500);
     } else {
       const newAttempts = attempts + 1;

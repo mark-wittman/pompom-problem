@@ -17,6 +17,26 @@ export default function PhotoBooth() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Time score: faster = more points (max 50 points for under 1 min, 0 for over 5 min)
+  const timeScore = Math.max(0, Math.round(50 * (1 - Math.min(elapsedTime, 300) / 300)));
+  // Style score: each accessory = 5 points (max 50)
+  const stylePoints = styleScore * 5;
+  // Total
+  const totalScore = timeScore + stylePoints;
+
+  // Grade
+  const grade =
+    totalScore >= 90 ? 'S' :
+    totalScore >= 75 ? 'A' :
+    totalScore >= 55 ? 'B' :
+    totalScore >= 35 ? 'C' : 'D';
+
+  const gradeColor =
+    grade === 'S' ? '#FFD700' :
+    grade === 'A' ? '#7EBD73' :
+    grade === 'B' ? '#5B8DBE' :
+    grade === 'C' ? '#E8A34E' : '#E8829B';
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -29,49 +49,44 @@ export default function PhotoBooth() {
     }
 
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = 300 * dpr;
-    canvas.height = 300 * dpr;
-    canvas.style.width = '300px';
-    canvas.style.height = '300px';
+    canvas.width = 260 * dpr;
+    canvas.height = 260 * dpr;
+    canvas.style.width = '260px';
+    canvas.style.height = '260px';
     ctx.scale(dpr, dpr);
 
     const render = (time: number) => {
-      ctx.clearRect(0, 0, 300, 300);
+      ctx.clearRect(0, 0, 260, 260);
 
       // Paper background
       ctx.fillStyle = '#FDF6E3';
-      ctx.fillRect(0, 0, 300, 300);
+      ctx.fillRect(0, 0, 260, 260);
 
-      // Decorative border (hand-drawn style)
+      // Decorative border
       ctx.strokeStyle = '#E8E0D0';
       ctx.lineWidth = 2;
       ctx.setLineDash([8, 4]);
-      ctx.strokeRect(8, 8, 284, 284);
+      ctx.strokeRect(8, 8, 244, 244);
       ctx.setLineDash([]);
 
       // Confetti dots
       const t = time / 1000;
       ctx.globalAlpha = 0.3;
       const confettiColors = ['#E8829B', '#5B8DBE', '#7EBD73', '#E8D44E', '#9B72CF', '#E8A34E'];
-      for (let i = 0; i < 20; i++) {
-        const cx = 30 + (i * 137) % 240;
-        const cy = 20 + Math.sin(t * 2 + i) * 10 + (i * 97) % 260;
+      for (let i = 0; i < 16; i++) {
+        const cx = 25 + (i * 137) % 210;
+        const cy = 20 + Math.sin(t * 2 + i) * 8 + (i * 97) % 220;
         ctx.fillStyle = confettiColors[i % confettiColors.length];
         ctx.beginPath();
-        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+        ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
 
       // Render pom-pom portrait
       rendererRef.current!.renderPortrait(
-        ctx,
-        150,
-        150,
-        3.5,
-        pomColor,
-        accessories,
-        t
+        ctx, 130, 130, 3,
+        pomColor, accessories, t
       );
 
       animRef.current = requestAnimationFrame(render);
@@ -90,67 +105,62 @@ export default function PhotoBooth() {
   };
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-[#FDF6E3]/95">
+    <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-[#FDF6E3]/95 overflow-y-auto py-4">
       <div
-        className="text-center"
+        className="text-center w-full max-w-sm px-4"
         style={{ fontFamily: "'Patrick Hand', cursive" }}
       >
-        <h2 className="text-3xl mb-4" style={{ color: '#4A4A4A' }}>
+        <h2 className="text-2xl mb-3" style={{ color: '#4A4A4A' }}>
           Photo Booth!
         </h2>
 
         {/* Portrait canvas */}
-        <div className="inline-block rounded-2xl overflow-hidden border-4 border-[#E8E0D0] shadow-lg mb-6">
+        <div className="inline-block rounded-2xl overflow-hidden border-4 border-[#E8E0D0] shadow-lg mb-4">
           <canvas ref={canvasRef} />
         </div>
 
-        {/* Stats */}
-        <div className="flex justify-center gap-8 mb-6">
-          <div className="text-center">
-            <div className="text-sm text-gray-400">Time</div>
-            <div className="text-2xl" style={{ color: '#5B8DBE' }}>
-              {formatTime(elapsedTime)}
-            </div>
+        {/* Score card */}
+        <div className="bg-white rounded-xl border-2 border-[#E8E0D0] p-4 mb-4">
+          {/* Grade */}
+          <div className="text-5xl font-bold mb-2" style={{ color: gradeColor }}>
+            {grade}
           </div>
-          <div className="text-center">
-            <div className="text-sm text-gray-400">Style</div>
-            <div className="text-2xl" style={{ color: '#E8829B' }}>
-              ✨ {styleScore}/10
-            </div>
+          <div className="text-3xl font-bold mb-3" style={{ color: '#4A4A4A' }}>
+            {totalScore} pts
           </div>
-          <div className="text-center">
-            <div className="text-sm text-gray-400">Color</div>
-            <div className="text-2xl">
-              <span
-                className="inline-block w-6 h-6 rounded-full border-2 border-gray-300"
-                style={{ backgroundColor: PALETTE[pomColor] }}
-              />
+
+          {/* Breakdown */}
+          <div className="flex justify-center gap-6 text-sm">
+            <div>
+              <div className="text-gray-400">Time</div>
+              <div style={{ color: '#5B8DBE' }}>
+                {formatTime(elapsedTime)}
+              </div>
+              <div className="text-xs text-gray-300">+{timeScore} pts</div>
+            </div>
+            <div>
+              <div className="text-gray-400">Style</div>
+              <div style={{ color: '#E8829B' }}>
+                {styleScore}/10
+              </div>
+              <div className="text-xs text-gray-300">+{stylePoints} pts</div>
+            </div>
+            <div>
+              <div className="text-gray-400">Color</div>
+              <div>
+                <span
+                  className="inline-block w-5 h-5 rounded-full border-2 border-gray-300"
+                  style={{ backgroundColor: PALETTE[pomColor] }}
+                />
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Accessories collected */}
-        {accessories.length > 0 && (
-          <div className="mb-6">
-            <div className="text-sm text-gray-400 mb-1">Collected</div>
-            <div className="flex flex-wrap justify-center gap-2">
-              {accessories.map((acc) => (
-                <span
-                  key={acc}
-                  className="px-2 py-1 bg-white rounded-lg border border-[#E8E0D0] text-sm"
-                  style={{ color: '#4A4A4A' }}
-                >
-                  {acc}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Play Again button */}
         <button
           onClick={handlePlayAgain}
-          className="px-8 py-3 text-xl rounded-2xl border-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          className="px-8 py-2.5 text-xl rounded-2xl border-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
           style={{
             fontFamily: "'Patrick Hand', cursive",
             backgroundColor: '#E8829B',

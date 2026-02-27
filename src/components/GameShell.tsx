@@ -5,6 +5,7 @@ import GameCanvas from './GameCanvas';
 import TitleScreen from './TitleScreen';
 import HUD from './HUD';
 import SpellingChallenge from './SpellingChallenge';
+import DressUp from './DressUp';
 import PhotoBooth from './PhotoBooth';
 
 export default function GameShell() {
@@ -21,6 +22,7 @@ export default function GameShell() {
         {phase === 'title' && <TitleScreen />}
         {phase === 'playing' && <HUD />}
         {phase === 'spelling' && <SpellingChallenge />}
+        {phase === 'dressup' && <DressUp />}
         {phase === 'photobooth' && <PhotoBooth />}
       </div>
     </div>

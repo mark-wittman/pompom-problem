@@ -40,6 +40,7 @@ export class Game {
   onCollectPaint?: (color: string) => void;
   onCollectAccessory?: (name: string) => void;
   onReachSummit?: () => void;
+  onFellOff?: () => void;
 
   constructor() {
     this.pom = new PomPom(SPAWN_X, SPAWN_Y);
@@ -170,26 +171,11 @@ export class Game {
     // Camera
     this.camera.update(this.pom.y, dt);
 
-    // Fall off screen detection — respawn if player is below camera view
-    if (this.pom.y > this.camera.y + CANVAS_HEIGHT + 100) {
-      if (!this.isRespawning) {
-        this.isRespawning = true;
-        this.respawnTimer = 0.5; // Brief delay before respawn
-      }
-    }
-
-    // Handle respawn timer
-    if (this.isRespawning) {
-      this.respawnTimer -= dt;
-      if (this.respawnTimer <= 0) {
-        this.pom.x = this.lastSafeX;
-        this.pom.y = this.lastSafeY - 20; // Slightly above the platform
-        this.pom.vx = 0;
-        this.pom.vy = 0;
-        this.pom.isGrounded = false;
-        this.pom.isJumping = false;
-        this.isRespawning = false;
-      }
+    // Fall off screen detection — restart from beginning
+    if (this.pom.y > this.camera.y + CANVAS_HEIGHT + 100 && !this.isRespawning) {
+      this.isRespawning = true;
+      this.isRunning = false;
+      this.onFellOff?.();
     }
 
     // Check summit
