@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  --background: #2A2A2A;
+  --foreground: #4A4A4A;
+  --cream: #FDF6E3;
+  --font-hand: 'Patrick Hand', cursive;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-hand);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent pull-to-refresh on mobile */
+body {
+  overscroll-behavior: none;
+}
+
+/* Canvas crisp edges */
+canvas {
+  display: block;
+}
+
+/* Selection styling */
+::selection {
+  background: #E8829B;
+  color: white;
+}
