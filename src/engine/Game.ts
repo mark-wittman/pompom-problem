@@ -31,6 +31,10 @@ export class Game {
   elapsedTime: number = 0;
   reachedSummit: boolean = false;
   isRunning: boolean = false;
+  lastSafeX: number = SPAWN_X;
+  lastSafeY: number = SPAWN_Y;
+  respawnTimer: number = 0;
+  isRespawning: boolean = false;
 
   // Callbacks
   onCollectPaint?: (color: string) => void;
@@ -64,6 +68,10 @@ export class Game {
     this.elapsedTime = 0;
     this.reachedSummit = false;
     this.isRunning = true;
+    this.lastSafeX = SPAWN_X;
+    this.lastSafeY = SPAWN_Y;
+    this.respawnTimer = 0;
+    this.isRespawning = false;
   }
 
   update(input: InputState, dt: number): void {
@@ -153,8 +161,36 @@ export class Game {
       }
     }
 
+    // Save last safe position when grounded
+    if (this.pom.isGrounded) {
+      this.lastSafeX = this.pom.x;
+      this.lastSafeY = this.pom.y;
+    }
+
     // Camera
     this.camera.update(this.pom.y, dt);
+
+    // Fall off screen detection — respawn if player is below camera view
+    if (this.pom.y > this.camera.y + CANVAS_HEIGHT + 100) {
+      if (!this.isRespawning) {
+        this.isRespawning = true;
+        this.respawnTimer = 0.5; // Brief delay before respawn
+      }
+    }
+
+    // Handle respawn timer
+    if (this.isRespawning) {
+      this.respawnTimer -= dt;
+      if (this.respawnTimer <= 0) {
+        this.pom.x = this.lastSafeX;
+        this.pom.y = this.lastSafeY - 20; // Slightly above the platform
+        this.pom.vx = 0;
+        this.pom.vy = 0;
+        this.pom.isGrounded = false;
+        this.pom.isJumping = false;
+        this.isRespawning = false;
+      }
+    }
 
     // Check summit
     if (!this.reachedSummit && this.pom.y < SUMMIT_Y) {

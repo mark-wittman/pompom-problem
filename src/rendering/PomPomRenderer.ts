@@ -278,37 +278,7 @@ export class PomPomRenderer {
   }
 
   private renderLimbs(ctx: CanvasRenderingContext2D, pom: PomPom, radius: number): void {
-    ctx.strokeStyle = PENCIL_GRAY;
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-
-    const faceDir = pom.facingRight ? 1 : -1;
-
-    // Arms - stick style
-    const armSwing = pom.state === 'running' ? Math.sin(pom.idleTimer * 12) * 0.4 : 0;
-    const armRaise = pom.state === 'jumping' ? -0.5 : pom.state === 'falling' ? 0.3 : 0;
-
-    // Left arm
-    const leftArmAngle = Math.PI * 0.65 + armSwing + armRaise;
-    ctx.beginPath();
-    ctx.moveTo(Math.cos(leftArmAngle) * (radius - 2), Math.sin(leftArmAngle) * (radius - 2));
-    ctx.lineTo(
-      Math.cos(leftArmAngle) * (radius + 10),
-      Math.sin(leftArmAngle) * (radius + 10)
-    );
-    ctx.stroke();
-
-    // Right arm
-    const rightArmAngle = Math.PI * 0.35 - armSwing + armRaise;
-    ctx.beginPath();
-    ctx.moveTo(Math.cos(rightArmAngle) * (radius - 2), Math.sin(rightArmAngle) * (radius - 2));
-    ctx.lineTo(
-      Math.cos(rightArmAngle) * (radius + 10),
-      Math.sin(rightArmAngle) * (radius + 10)
-    );
-    ctx.stroke();
-
-    // Feet - small ovals at bottom
+    // Cute little feet only (no arms)
     const feetSpread = 6;
     const footY = radius - 2;
     const walkBob = pom.state === 'running' ? Math.sin(pom.idleTimer * 12) * 3 : 0;
